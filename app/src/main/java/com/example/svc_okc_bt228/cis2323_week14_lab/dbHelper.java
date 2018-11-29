@@ -1,8 +1,12 @@
 package com.example.svc_okc_bt228.cis2323_week14_lab;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
 
 public class dbHelper extends SQLiteOpenHelper {
 
@@ -17,6 +21,7 @@ public class dbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String q = String.format("CREATE TABLE %s (ID INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL)", DB_NAME, DB_COLUMN);
+        db.execSQL(q);
     }
 
     @Override
@@ -33,4 +38,18 @@ public class dbHelper extends SQLiteOpenHelper {
         db.insertWithOnConflict(DB_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
+    public ArrayList<String> getTaskList(){
+        ArrayList<String> taskList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(DB_NAME, new String[]{DB_COLUMN}, null, null, null, null, null);
+
+        while(cursor.moveToNext()){
+            int index = cursor.getColumnIndex(DB_COLUMN);
+            taskList.add(cursor.getString(index));
+        }
+
+        db.close();
+        return taskList;
+    }
 }
+
